@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Sensor_App</string>
+    <string name="photo_path">Photo Path: %s</string>
+    <string name="photo_select">Photo Select</string>
+    <string name="xyz_value">xyz</string>
+    <string name="gesture_state">Gesture</string>
+    <string name="next_r">Next Ready</string>
+    <string name="previous_r">Previous Ready</string>
+    <string name="project_r">Project Ready</string>
+</resources>
