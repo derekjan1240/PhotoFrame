@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Photo frame</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Kite+One" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<style type="text/css">
+		body{
+			font-family: 'Kite One', sans-serif;
+			background: #CEB5A7;
+		}
+		h1{
+			color: #E0F2E9;
+			text-transform: uppercase;
+			letter-spacing: 3px;
+			font-weight: 300;
+			padding-top: 50px;
+		}
+		h2{
+			color: #E0F2E9;
+			letter-spacing: 3px;
+			font-weight: 300;
+			padding-top: 20px;
+		}
+		img {
+			margin: 30px;
+			max-width: 50%;
+			max-height: 600px;
+			border: #5B7B7A solid 8px;
+			border-radius: 10px;
+		}
+	</style>
+	
+</head>
+<body>
+	<div id="container">
+		<div class="row" style="text-align: center;">
+			<div class="col-12">
+      			<h1>Photo Frame</h1>
+      			<h2 id="photoCount">0</h2>
+    		</div>
+    	</div>
+
+    	<div class="row" style="text-align: center;">	
+    		<div class="col-12">
+    			<img id="photo" src="http://www.comfortel.com.au/staging/wp-content/uploads/2017/04/none-icon.png">
+    		</div>
+
+    		<div class="col-3"></div>
+    		<div class="col-2">
+    			<button id="previous" type="button" class="btn btn-light btn-lg"> < </button>
+    		</div>
+    		<div class="col-2">
+    			<button id="delete" class="btn btn-danger btn-lg"> x </button>
+    		</div>
+    		<div class="col-2">
+    			<button id="next" class="btn btn-light btn-lg"> > </button>
+    		</div>
+    		<div class="col-3"></div>
+		</div>
+	</div>
+</body>
+</html>
+
+<script>
+	let photos = [],
+	serverLength = photos.length;
+
+	function checkNew(result){
+		if(serverLength != result.length){
+			//get new photo
+			console.log('Get New Photo!');
+			serverLength = result.length;
+			photos.push('data:image/png;base64,' + result[result.length-1]);
+			count = photos.length;
+			showCount();
+			changePhoto();
+		}
+	}
+
+	function getPhoto(){
+		$.ajax({
+			url: '/getPhotos',                 
+			type: 'get',  
+			cache: false,                 
+			success: function (response) {
+				checkNew(response);
+				setTimeout(getPhoto, 1000);
+			}
+		});
+	}
+
+	$(document).ready(function(){
+		setTimeout(getPhoto, 1000);
+	});
+
+
+
+
+	let photoCount = document.getElementById("photoCount");
+	let count = photos.length;
+
+	//init count
+	showCount()
+	changePhoto()
+	
+	//previous photo
+    document.getElementById("previous").addEventListener("click", function( event ) {
+    	// console.log("previous photo")
+    	(count>1) ? count-- : count=1;
+    	showCount()
+    	changePhoto()
+  	}, false);
+  	
+  	//next photo
+  	document.getElementById("next").addEventListener("click", function( event ) {
+  		// console.log("next photo")
+    	(count<photos.length) ? count++ : count=photos.length;
+    	showCount()
+    	changePhoto()
+  	}, false);
+
+  	//delete hpoto
+	document.getElementById("delete").addEventListener("click", function( event ) {
+		// console.log("delete photo")
+    	photos.splice(count-1, 1);
+    	(count>photos.length) ? count=photos.length: count;	
+    	showCount()	
+		changePhoto()
+  	}, false);
+
+  	function changePhoto(){
+  		if(count<=0){
+  			//none photo
+  			document.getElementById("photo").src = "http://www.comfortel.com.au/staging/wp-content/uploads/2017/04/none-icon.png"
+  		}else{
+  			document.getElementById("photo").src = photos[count-1]
+  		}
+  	}	
+
+  	function showCount(){
+  		photoCount.innerHTML = count;
+  	}
+
+</script>
