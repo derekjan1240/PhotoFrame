@@ -7,11 +7,32 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import java.nio.file.Files.size
+import android.support.annotation.NonNull
+import android.util.Base64InputStream
+import android.util.Base64OutputStream
+import android.webkit.WebViewClient
+
+import okhttp3.*
+import okio.ByteString
+import org.json.JSONObject
+import java.util.*
+import okhttp3.OkHttpClient
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.nio.file.Files.readAllBytes
+
 
 class MainActivity : AppCompatActivity() {
     //layout
@@ -22,13 +43,19 @@ class MainActivity : AppCompatActivity() {
     internal  lateinit var gestureState: TextView
 
     //photos
-    internal var photos = arrayOf(R.drawable.rock, R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f, R.drawable.g)
+    internal var photos = arrayOf(R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f, R.drawable.g, R.drawable.h)
     internal var photoCurrent =0
     internal var photoCount = photos.size
 
     //sensor
     lateinit var sensorManager: SensorManager
     var sensor: Sensor? = null
+
+    //使用google寫好的 Client
+    private val client = OkHttpClient()
+    val JSON = MediaType.parse("application/json; charset=utf-8")
+    val MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8")
+
 
     // gesture state
     var isNextPhotoReady: Boolean = false
@@ -37,7 +64,6 @@ class MainActivity : AppCompatActivity() {
 //    var isPreviousPhotoTrigger: Boolean = false
     var isProjectPhotoReady: Boolean = false
 //    var isProjectPhotoTrigger: Boolean = false
-
     private val eventListener = object : SensorEventListener{
         // 當感測器的 精確度改變時，就會觸發
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
@@ -82,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     if (yValue > 8){
                         isProjectPhotoReady = true
 //                        gestureState.text = "Project ready";
-                    }else if (yValue<0 && isProjectPhotoReady){
+                    }else if (yValue < 1.5 && isProjectPhotoReady){
 //                        isProjectPhotoTrigger = true
                         isProjectPhotoReady = false
                         ProjectPhotoToServer()
@@ -124,20 +150,25 @@ class MainActivity : AppCompatActivity() {
 
     // photo test function
     private fun buttonPress(){
+        gestureState.text = "Gesture"
         photoCurrent=(photoCurrent+1)%photoCount
         photoPath.text = getString(R.string.photo_path, photoCurrent.toString())
         photoView.setImageResource(photos[photoCurrent])
+
     }
 
 
     // photo fun
     fun ShowNextPhoto(){
+        gestureState.text = "Gesture"
         photoCurrent=(photoCurrent+1)%photoCount
         photoPath.text = getString(R.string.photo_path, photoCurrent.toString())
         photoView.setImageResource(photos[photoCurrent])
+
     }
 
     fun ShowPreviousPhoto(){
+        gestureState.text = "Gesture"
         photoCurrent=(photoCurrent-1)%photoCount
         if(photoCurrent<0){
             photoCurrent = photoCount-1
@@ -146,8 +177,34 @@ class MainActivity : AppCompatActivity() {
         photoView.setImageResource(photos[photoCurrent])
     }
 
-    fun ProjectPhotoToServer(){
 
+    fun ProjectPhotoToServer(){
+        gestureState.text = "Wait"
+        val bmp = BitmapFactory.decodeResource(getResources(),photos[photoCurrent])
+        val baos = ByteArrayOutputStream()
+        bmp.compress(Bitmap.CompressFormat.JPEG, 10, baos)
+        var imageBytes = baos.toByteArray()
+        val base64 = android.util.Base64.encodeToString(imageBytes, android.util.Base64.DEFAULT)
+
+        val body = FormBody.Builder()
+            .add("photo", base64)
+            .build()
+        val request1 = Request.Builder()
+            .url("https://522116bd.ngrok.io/post")
+            .post(body)
+            .build()
+
+        val call = client.newCall(request1)
+
+        call.enqueue(object : Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                println("fail : $e")
+            }
+            override fun onResponse(call: Call?, response: Response?) {
+                //處理回來的 Response
+                val responseStr = response!!.body()!!.string()
+            }})
+        gestureState.text = "END"
     }
 
 
