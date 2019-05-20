@@ -9,56 +9,72 @@
 		body{
 			font-family: 'Kite One', sans-serif;
 			background: #CEB5A7;
+			width: 100vw;
+			height: 100vh;
 		}
-		h1{
+		h2{
 			color: #E0F2E9;
 			text-transform: uppercase;
 			letter-spacing: 3px;
 			font-weight: 300;
-			padding-top: 50px;
+			text-align: center;
+			padding: 3px;
 		}
-		h2{
+		h3{
 			color: #E0F2E9;
 			letter-spacing: 3px;
 			font-weight: 300;
-			padding-top: 20px;
+			text-align: center;
 		}
 		img {
-			margin: 30px;
-			max-width: 50%;
-			max-height: 600px;
-			border: #5B7B7A solid 8px;
+			border: #5B7B7A solid 4px;
 			border-radius: 10px;
+			max-height: 73vh
 		}
+
+
 	</style>
 	
 </head>
 <body>
-	<div id="container">
-		<div class="row" style="text-align: center;">
-			<div class="col-12">
-      			<h1>Photo Frame</h1>
-      			<h2 id="photoCount">0</h2>
-    		</div>
+	<div class="container">
+		<div id="title" style="height: 17vh;">
+			<div class="row align-items-center" style="height: 10vh;">
+				<div class="col-12">
+					<h2>Photo Frame</h1>
+				</div>
+			</div>
+			<div class="row" style="height: 7vh;">
+				<div class="col-12">
+					<h3 id="photoCount">0</h2>
+				</div>
+			</div>
     	</div>
 
-    	<div class="row" style="text-align: center;">	
-    		<div class="col-12">
-    			<img id="photo" src="http://www.comfortel.com.au/staging/wp-content/uploads/2017/04/none-icon.png">
-    		</div>
-
-    		<div class="col-3"></div>
-    		<div class="col-2">
-    			<button id="previous" type="button" class="btn btn-light btn-lg"> < </button>
-    		</div>
-    		<div class="col-2">
-    			<button id="delete" class="btn btn-danger btn-lg"> x </button>
-    		</div>
-    		<div class="col-2">
-    			<button id="next" class="btn btn-light btn-lg"> > </button>
-    		</div>
-    		<div class="col-3"></div>
+		<div id="photoFrame" style="text-align: center; height: 73vh;">	
+			<!-- <div class="row" style="height: 70vh;"> -->
+				<!-- <div class="col-12"> -->
+					<img id="photo" src="http://www.comfortel.com.au/staging/wp-content/uploads/2017/04/none-icon.png">
+				<!-- </div> -->
+			<!-- </div> -->
 		</div>
+
+		<div id="controller" style="text-align: center; height: 10vh; ">
+			<div class="row align-items-center" style="height: 10vh;">
+				<div class="col-3"></div>
+				<div class="col-2">
+					<button id="previous" type="button" class="btn btn-light btn-lg"> < </button>
+				</div>
+				<div class="col-2">
+					<button id="delete" class="btn btn-danger btn-lg"> x </button>
+				</div>
+				<div class="col-2">
+					<button id="next" class="btn btn-light btn-lg"> > </button>
+				</div>
+				<div class="col-3"></div>
+			</div>
+		</div>
+		
 	</div>
 </body>
 </html>
@@ -95,9 +111,6 @@
 		setTimeout(getPhoto, 1000);
 	});
 
-
-
-
 	let photoCount = document.getElementById("photoCount");
 	let count = photos.length;
 
@@ -131,10 +144,13 @@
   	}, false);
 
   	function changePhoto(){
+		  console.log('count:', count);
+		  console.log(photos);
   		if(count<=0){
   			//none photo
   			document.getElementById("photo").src = "http://www.comfortel.com.au/staging/wp-content/uploads/2017/04/none-icon.png"
   		}else{
+			  console.log('ok')
   			document.getElementById("photo").src = photos[count-1]
   		}
   	}	
