@@ -21,13 +21,22 @@ app.get('/',(req, res)=>{
 });
 
 // check new photo
-app.get('/getPhotos', (req, res)=>{
-  res.send(photos);
+app.get('/getPhotosLength', (req, res)=>{
+  if(photos.length){
+    res.send(photos.length.toString());
+  }else{
+    res.send('0');
+  }
+  
+})
+app.get('/getNewPhotos', (req, res)=>{
+  res.send(photos[photos.length-1]);
 })
 
 // api for app post photo 
 app.post('/post', (req, res) => {
-  console.log(req.body.photo);
+  // console.log(req.body.photo);
+  console.log('POST SUCCESS!');
   data = req.body.photo;
   photos.push(req.body.photo);
   res.json({"OK": req.body.photo});

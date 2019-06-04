@@ -84,31 +84,39 @@
 	serverLength = photos.length;
 
 	function checkNew(result){
-		if(serverLength != result.length){
+		if(serverLength != result){
 			//get new photo
 			console.log('Get New Photo!');
-			serverLength = result.length;
-			photos.push('data:image/png;base64,' + result[result.length-1]);
-			count = photos.length;
-			showCount();
-			changePhoto();
+			serverLength = result;
+			//request for new photo
+			$.ajax({
+				url: '/getNewPhotos',                 
+				type: 'get',  
+				cache: false,                 
+				success: function (newPhotoData) {
+					photos.push('data:image/png;base64,' + newPhotoData);
+					count = photos.length;
+					showCount();
+					changePhoto();
+				}
+			});
 		}
 	}
 
-	function getPhoto(){
+	function getPhotoLength(){
 		$.ajax({
-			url: '/getPhotos',                 
+			url: '/getPhotosLength',                 
 			type: 'get',  
 			cache: false,                 
 			success: function (response) {
 				checkNew(response);
-				setTimeout(getPhoto, 1000);
+				setTimeout(getPhotoLength, 1000);
 			}
 		});
 	}
 
 	$(document).ready(function(){
-		setTimeout(getPhoto, 1000);
+		setTimeout(getPhotoLength, 1000);
 	});
 
 	let photoCount = document.getElementById("photoCount");
