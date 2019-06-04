@@ -120,15 +120,15 @@
 	
 	//previous photo
     document.getElementById("previous").addEventListener("click", function( event ) {
-    	// console.log("previous photo")
-    	(count>1) ? count-- : count=1;
+		// console.log("previous photo")
+		(count>1) ? count-- : null;
     	showCount()
     	changePhoto()
   	}, false);
   	
   	//next photo
   	document.getElementById("next").addEventListener("click", function( event ) {
-  		// console.log("next photo")
+		// console.log("next photo")
     	(count<photos.length) ? count++ : count=photos.length;
     	showCount()
     	changePhoto()
